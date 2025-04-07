@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+    coinpilot:
+        build:
+            context: ./docker
+        container_name: coinpilot
+        working_dir: /var/www/html
+        volumes:
+            - ./:/var/www/html
+        tty: true
+        user: "1000:1000"
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        ports:
+            - "8081:8000"
+        command: >
+            sh -c "cp .env.example .env &&
+                   touch database/database.sqlite &&
+                   composer install &&
+                   composer dump-autoload &&
+                   php artisan migrate &&
+                   php artisan serve --host=0.0.0.0 --port=8000"
