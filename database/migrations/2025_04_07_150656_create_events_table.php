@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('events', function (Blueprint $table) {
             $table->id();
             $table->string('type');
-            $table->foreignId('account_id')->constrained('account');
+            $table->foreignId('account_id')->constrained('accounts');
             $table->bigInteger('version')->default(0);
             $table->json('payload');
             $table->timestamps();

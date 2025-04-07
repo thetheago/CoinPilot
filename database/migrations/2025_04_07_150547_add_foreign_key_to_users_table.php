@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->foreignId('account_id')->constrained('accounts');
+            $table->unsignedBigInteger('account_id')->after('name');
+            $table->foreign('account_id')->references('id')->on('accounts');
         });
     }
 
@@ -23,6 +24,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropForeign(['account_id']);
+            $table->dropColumn('account_id');
         });
     }
 };

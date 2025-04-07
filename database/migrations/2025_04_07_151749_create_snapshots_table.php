@@ -14,10 +14,12 @@ return new class extends Migration
         Schema::create('snapshots', function (Blueprint $table) {
             $table->id();
             $table->string('type');
-            $table->foreignId('account_id')->constrained('account');
+            $table->foreignId('account_id')->constrained('accounts');
             $table->json('state'); // Estado da lida inteira da minha stack de events, exemplo : { amount: 300 }
             $table->unsignedBigInteger('version');
             $table->timestamps();
+
+            $table->index(['account_id', 'version']);
         });
     }
 
