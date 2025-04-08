@@ -34,4 +34,4 @@ class UserTypeTest extends TestCase
         
         new UserType('invalid_type');
     }
-} 
+}

@@ -12,4 +12,4 @@ class SuccessResponse extends AbstractSuccessResponse
     {
         return static::makeResponse($data, $code);
     }
-} 
+}

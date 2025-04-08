@@ -15,4 +15,4 @@ class ValidationErrorResponse extends AbstractErrorResponse
     {
         return static::makeResponse($validator->errors()->all(), $code);
     }
-} 
+}

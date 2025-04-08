@@ -14,4 +14,4 @@ abstract class AbstractErrorResponse
     {
         return response()->json(['errors' => $errors], $code ?? static::DEFAULT_STATUS_CODE);
     }
-} 
+}

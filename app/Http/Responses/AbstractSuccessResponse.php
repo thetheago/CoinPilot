@@ -14,4 +14,4 @@ abstract class AbstractSuccessResponse
     {
         return response()->json($data, $code ?? static::DEFAULT_STATUS_CODE);
     }
-} 
+}

@@ -157,7 +157,12 @@ class TransferControllerTest extends TestCase
         $response = $this->controller->transfer($request);
         
         $this->assertEquals(422, $response->getStatusCode());
-        $this->assertEquals(['errors' => ['O campo value deve ser um número com duas casas decimais.']], $response->getData(true));
+        $this->assertEquals(
+            [
+                'errors' => ['O campo value deve ser um número com duas casas decimais.']
+            ],
+            $response->getData(true)
+        );
     }
 
     public function testPayerMustExist(): void
@@ -204,4 +209,4 @@ class TransferControllerTest extends TestCase
         
         $this->assertEquals(200, $response->getStatusCode());
     }
-} 
+}
