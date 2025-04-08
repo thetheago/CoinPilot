@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\ValueObjects\UserType;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -25,6 +26,7 @@ class User extends Authenticatable
         'password',
         'cpf',
         'account_id',
+        'user_type',
     ];
 
     /**
@@ -56,5 +58,29 @@ class User extends Authenticatable
     public function account(): HasOne
     {
         return $this->hasOne(Account::class, 'id', 'account_id');
+    }
+
+    /**
+     * Get the user type as a Value Object.
+     */
+    public function getUserType(): UserType
+    {
+        return new UserType($this->user_type);
+    }
+
+    /**
+     * Check if the user is a merchant.
+     */
+    public function isLojista(): bool
+    {
+        return $this->getUserType()->isLojista();
+    }
+
+    /**
+     * Check if the user is a common user.
+     */
+    public function isComum(): bool
+    {
+        return $this->getUserType()->isCommon();
     }
 }
