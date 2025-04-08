@@ -8,6 +8,7 @@ use App\Models\Account;
 use App\Http\Controllers\TransferController;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
+use Mockery;
 
 class TransferControllerTest extends TestCase
 {
@@ -35,6 +36,12 @@ class TransferControllerTest extends TestCase
         $this->controller = new TransferController();
     }
 
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
+    }
+
     public function testUserCanBeCreatedWithoutAccount(): void
     {
         $user = User::factory()->create();
@@ -49,7 +56,8 @@ class TransferControllerTest extends TestCase
 
     public function testTransferRequiresPayerField(): void
     {
-        $request = new Request([
+        $request = Mockery::mock(Request::class);
+        $request->shouldReceive('all')->andReturn([
             'payee' => $this->payee->id,
             'value' => fake()->randomFloat(2, 0.01, 1000)
         ]);
@@ -62,7 +70,8 @@ class TransferControllerTest extends TestCase
 
     public function testTransferRequiresPayeeField(): void
     {
-        $request = new Request([
+        $request = Mockery::mock(Request::class);
+        $request->shouldReceive('all')->andReturn([
             'payer' => $this->payer->id,
             'value' => fake()->randomFloat(2, 0.01, 1000)
         ]);
@@ -75,7 +84,8 @@ class TransferControllerTest extends TestCase
 
     public function testTransferRequiresValueField(): void
     {
-        $request = new Request([
+        $request = Mockery::mock(Request::class);
+        $request->shouldReceive('all')->andReturn([
             'payer' => $this->payer->id,
             'payee' => $this->payee->id
         ]);
@@ -88,7 +98,8 @@ class TransferControllerTest extends TestCase
 
     public function testPayerMustBeAnInteger(): void
     {
-        $request = new Request([
+        $request = Mockery::mock(Request::class);
+        $request->shouldReceive('all')->andReturn([
             'payer' => 'seu madruga',
             'payee' => $this->payee->id,
             'value' => fake()->randomFloat(2, 0.01, 1000)
@@ -102,7 +113,8 @@ class TransferControllerTest extends TestCase
 
     public function testPayeeMustBeAnInteger(): void
     {
-        $request = new Request([
+        $request = Mockery::mock(Request::class);
+        $request->shouldReceive('all')->andReturn([
             'payer' => $this->payer->id,
             'payee' => 'seu barriga',
             'value' => fake()->randomFloat(2, 0.01, 1000)
@@ -116,7 +128,8 @@ class TransferControllerTest extends TestCase
 
     public function testValueMustBeNumeric(): void
     {
-        $request = new Request([
+        $request = Mockery::mock(Request::class);
+        $request->shouldReceive('all')->andReturn([
             'payer' => $this->payer->id,
             'payee' => $this->payee->id,
             'value' => 'timao e pumba'
@@ -134,7 +147,8 @@ class TransferControllerTest extends TestCase
 
     public function testValueMustBeGreaterThanZero(): void
     {
-        $request = new Request([
+        $request = Mockery::mock(Request::class);
+        $request->shouldReceive('all')->andReturn([
             'payer' => $this->payer->id,
             'payee' => $this->payee->id,
             'value' => 0
@@ -148,7 +162,8 @@ class TransferControllerTest extends TestCase
 
     public function testValueMustHaveAtMostTwoDecimalPlaces(): void
     {
-        $request = new Request([
+        $request = Mockery::mock(Request::class);
+        $request->shouldReceive('all')->andReturn([
             'payer' => $this->payer->id,
             'payee' => $this->payee->id,
             'value' => fake()->randomFloat(3, 0.01, 1000)
@@ -169,7 +184,8 @@ class TransferControllerTest extends TestCase
     {
         $nonExistentId = $this->payer->id + fake()->numberBetween(1, 1000);
         
-        $request = new Request([
+        $request = Mockery::mock(Request::class);
+        $request->shouldReceive('all')->andReturn([
             'payer' => $nonExistentId,
             'payee' => $this->payee->id,
             'value' => fake()->randomFloat(2, 0.01, 1000)
@@ -185,7 +201,8 @@ class TransferControllerTest extends TestCase
     {
         $nonExistentId = $this->payer->id + fake()->numberBetween(1, 1000);
         
-        $request = new Request([
+        $request = Mockery::mock(Request::class);
+        $request->shouldReceive('all')->andReturn([
             'payer' => $this->payer->id,
             'payee' => $nonExistentId,
             'value' => fake()->randomFloat(2, 0.01, 1000)
@@ -199,7 +216,8 @@ class TransferControllerTest extends TestCase
 
     public function testValidTransferRequest(): void
     {
-        $request = new Request([
+        $request = Mockery::mock(Request::class);
+        $request->shouldReceive('all')->andReturn([
             'payer' => $this->payer->id,
             'payee' => $this->payee->id,
             'value' => fake()->randomFloat(2, 0.01, 1000)

@@ -14,7 +14,9 @@ class TransferController extends Controller
 {
     public function transfer(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
+        $payload = $request->all();
+
+        $validator = Validator::make($payload, [
             'payer' => 'required|integer|exists:users,id',
             'payee' => 'required|integer|exists:users,id',
             'value' => 'required|numeric|min:0.01|decimal:0,2'
