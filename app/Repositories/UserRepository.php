@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\User;
-use App\Interface\UserRepositoryInterface;
+use App\Interface\IUserRepository;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Exceptions\UserNotFoundException;
 
-class UserRepository implements UserRepositoryInterface
+class UserRepository implements IUserRepository
 {
     /**
      * @throws UserNotFoundException

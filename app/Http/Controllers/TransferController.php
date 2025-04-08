@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\JsonResponse;
 use App\Http\Responses\ValidationErrorResponse;
 use App\Http\Responses\SuccessResponse;
+use App\Factories\TransferInputFactory;
 
 class TransferController extends Controller
 {
@@ -37,10 +38,16 @@ class TransferController extends Controller
             return ValidationErrorResponse::make(validator: $validator);
         }
 
+        $input = TransferInputFactory::createFromRequest(request: $request);
+
         // Outra saída seria um throw de alguma exception de negócio ou erro mesmo.
         // Pretendo definir isso em event listener do laravel.
         // (Ou colocar um try catch aqui para não utilizar metodos magicos do framework)
         // $this->transferUseCase->execute($dto);
+
+        //$output = $useCase->execute($input);
+
+        // return TransactionResource::make($output)->response()->setStatusCode(Response::HTTP_CREATED);
 
         return SuccessResponse::make(data: ['deu certo' => true]);
     }

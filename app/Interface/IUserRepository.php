@@ -7,7 +7,7 @@ namespace App\Interface;
 use App\Models\User;
 use App\Exceptions\UserNotFoundException;
 
-interface UserRepositoryInterface
+interface IUserRepository
 {
     public function isUserLojista(int $userId): bool;
 
