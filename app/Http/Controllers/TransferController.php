@@ -32,13 +32,13 @@ class TransferController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return ValidationErrorResponse::make($validator);
+            return ValidationErrorResponse::make(validator: $validator);
         }
 
         // Outra saída seria um throw de alguma exception de negócio ou erro mesmo.
         // Pretendo definir isso em event listener do laravel. (Ou colocar um try catch aqui para não utilizar metodos magicos do framework)
         // $this->transferUseCase->execute($dto);
 
-        return SuccessResponse::make(['deu certo' => true]);
+        return SuccessResponse::make(data: ['deu certo' => true]);
     }
 }
