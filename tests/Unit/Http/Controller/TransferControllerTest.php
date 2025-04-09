@@ -27,7 +27,7 @@ class TransferControllerTest extends TestCase
     {
         $request = Mockery::mock(Request::class);
         $request->shouldReceive('all')->andReturn([
-            'payee' => 2,
+            'payee' => fake()->numberBetween(1, 100),
             'value' => fake()->randomFloat(2, 0.01, 1000)
         ]);
         
@@ -41,7 +41,7 @@ class TransferControllerTest extends TestCase
     {
         $request = Mockery::mock(Request::class);
         $request->shouldReceive('all')->andReturn([
-            'payer' => 1,
+            'payer' => fake()->numberBetween(1, 100),
             'value' => fake()->randomFloat(2, 0.01, 1000)
         ]);
         
@@ -135,7 +135,7 @@ class TransferControllerTest extends TestCase
         $request->shouldReceive('all')->andReturn([
             'payer' => fake()->numberBetween(1, 100),
             'payee' => fake()->numberBetween(1, 100),
-            'value' => 100.123
+            'value' => fake()->randomFloat(3, 0.01, 1000)
         ]);
 
         $response = $this->controller->transfer($request);

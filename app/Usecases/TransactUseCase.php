@@ -52,6 +52,6 @@ class TransactUseCase
             throw new UnauthorizedException();
         }
 
-        TransferJob::dispatch(payer: $payer, payee: $payee, amount: $input->getValue());
+        TransferJob::dispatch(payer: $payer, payee: $payee, balance: $input->getValue());
     }
 }

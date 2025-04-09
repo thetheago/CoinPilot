@@ -10,9 +10,11 @@ use App\Interface\IUserRepository;
 use App\Interface\IAuthorizeService;
 use App\Models\User;
 use App\Usecases\TransactUseCase;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 use App\Exceptions\UnauthorizedException;
 use Mockery;
+use App\Jobs\TransferJob;
+use Illuminate\Support\Facades\Queue;
 
 class TransactUseCaseTest extends TestCase
 {
@@ -40,22 +42,24 @@ class TransactUseCaseTest extends TestCase
 
         $payer = Mockery::mock(User::class);
         $payer->shouldReceive('isLojista')->andReturn(true);
-        $payer->shouldReceive('getBalance')->andReturn(1000.00);
+        $payer->shouldReceive('getBalance')->andReturn(fake()->randomFloat(2, 1000, 10000));
 
         $payee = Mockery::mock(User::class);
         $payee->shouldReceive('isLojista')->andReturn(false);
-        $payee->shouldReceive('getBalance')->andReturn(0.00);
+        $payee->shouldReceive('getBalance')->andReturn(fake()->randomFloat(2, 0, 1000));
 
         $input = Mockery::mock(TransferInput::class);
-        $input->shouldReceive('getPayer')->andReturn(1);
-        $input->shouldReceive('getPayee')->andReturn(2);
-        $input->shouldReceive('getValue')->andReturn(100.00);
+        $payerId = fake()->numberBetween(1, 100);
+        $payeeId = fake()->numberBetween(1, 100);
+        $input->shouldReceive('getPayer')->andReturn($payerId);
+        $input->shouldReceive('getPayee')->andReturn($payeeId);
+        $input->shouldReceive('getValue')->andReturn(fake()->randomFloat(2, 0.01, 1000));
 
         $this->userRepository->shouldReceive('getUserById')
             ->times(2)
             ->andReturnUsing(fn($id) => match ($id) {
-                1 => $payer,
-                2 => $payee
+                $payerId => $payer,
+                $payeeId => $payee
             });
 
         $this->useCase->execute($input);
@@ -68,22 +72,24 @@ class TransactUseCaseTest extends TestCase
 
         $payer = Mockery::mock(User::class);
         $payer->shouldReceive('isLojista')->andReturn(false);
-        $payer->shouldReceive('getBalance')->andReturn(50.00);
+        $payer->shouldReceive('getBalance')->andReturn(fake()->randomFloat(2, 0, 50));
 
         $payee = Mockery::mock(User::class);
         $payee->shouldReceive('isLojista')->andReturn(false);
-        $payee->shouldReceive('getBalance')->andReturn(0.00);
+        $payee->shouldReceive('getBalance')->andReturn(fake()->randomFloat(2, 0, 1000));
 
         $input = Mockery::mock(TransferInput::class);
-        $input->shouldReceive('getPayer')->andReturn(1);
-        $input->shouldReceive('getPayee')->andReturn(2);
-        $input->shouldReceive('getValue')->andReturn(100.00);
+        $payerId = fake()->numberBetween(1, 100);
+        $payeeId = fake()->numberBetween(1, 100);
+        $input->shouldReceive('getPayer')->andReturn($payerId);
+        $input->shouldReceive('getPayee')->andReturn($payeeId);
+        $input->shouldReceive('getValue')->andReturn(fake()->randomFloat(2, 100, 1000));
 
         $this->userRepository->shouldReceive('getUserById')
             ->times(2)
             ->andReturnUsing(fn($id) => match ($id) {
-                1 => $payer,
-                2 => $payee
+                $payerId => $payer,
+                $payeeId => $payee
             });
 
         $this->useCase->execute($input);
@@ -91,31 +97,36 @@ class TransactUseCaseTest extends TestCase
 
     public function testShouldExecuteTransferSuccessfully(): void
     {
+        Queue::fake();
+
         $payer = Mockery::mock(User::class);
         $payer->shouldReceive('isLojista')->andReturn(false);
-        $payer->shouldReceive('getBalance')->andReturn(1000.00);
+        $payer->shouldReceive('getBalance')->andReturn(fake()->randomFloat(2, 1000, 10000));
 
         $payee = Mockery::mock(User::class);
         $payee->shouldReceive('isLojista')->andReturn(false);
-        $payee->shouldReceive('getBalance')->andReturn(0.00);
+        $payee->shouldReceive('getBalance')->andReturn(fake()->randomFloat(2, 0, 1000));
 
         $input = Mockery::mock(TransferInput::class);
-        $input->shouldReceive('getPayer')->andReturn(1);
-        $input->shouldReceive('getPayee')->andReturn(2);
-        $input->shouldReceive('getValue')->andReturn(100.00);
+        $payerId = fake()->numberBetween(1, 100);
+        $payeeId = fake()->numberBetween(1, 100);
+        $value = fake()->randomFloat(2, 0.01, 1000);
+        $input->shouldReceive('getPayer')->andReturn($payerId);
+        $input->shouldReceive('getPayee')->andReturn($payeeId);
+        $input->shouldReceive('getValue')->andReturn($value);
 
         $this->userRepository->shouldReceive('getUserById')
             ->times(2)
             ->andReturnUsing(fn($id) => match ($id) {
-                1 => $payer,
-                2 => $payee
+                $payerId => $payer,
+                $payeeId => $payee
             });
 
         $this->authorizeService->shouldReceive('checkAuthorization')->andReturn(true);
 
         $this->useCase->execute($input);
 
-        $this->assertTrue(true);
+        Queue::assertPushed(TransferJob::class);
     }
 
     public function testShouldThrowExceptionWhenAuthorizationFails(): void
@@ -126,22 +137,24 @@ class TransactUseCaseTest extends TestCase
 
         $payer = Mockery::mock(User::class);
         $payer->shouldReceive('isLojista')->andReturn(false);
-        $payer->shouldReceive('getBalance')->andReturn(1000.00);
+        $payer->shouldReceive('getBalance')->andReturn(fake()->randomFloat(2, 1000, 10000));
 
         $payee = Mockery::mock(User::class);
         $payee->shouldReceive('isLojista')->andReturn(false);
-        $payee->shouldReceive('getBalance')->andReturn(0.00);
+        $payee->shouldReceive('getBalance')->andReturn(fake()->randomFloat(2, 0, 1000));
 
         $input = Mockery::mock(TransferInput::class);
-        $input->shouldReceive('getPayer')->andReturn(1);
-        $input->shouldReceive('getPayee')->andReturn(2);
-        $input->shouldReceive('getValue')->andReturn(100.00);
+        $payerId = fake()->numberBetween(1, 100);
+        $payeeId = fake()->numberBetween(1, 100);
+        $input->shouldReceive('getPayer')->andReturn($payerId);
+        $input->shouldReceive('getPayee')->andReturn($payeeId);
+        $input->shouldReceive('getValue')->andReturn(fake()->randomFloat(2, 0.01, 1000));
 
         $this->userRepository->shouldReceive('getUserById')
             ->times(2)
             ->andReturnUsing(fn($id) => match ($id) {
-                1 => $payer,
-                2 => $payee
+                $payerId => $payer,
+                $payeeId => $payee
             });
 
         $this->useCase->execute($input);

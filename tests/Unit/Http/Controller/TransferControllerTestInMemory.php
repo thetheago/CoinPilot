@@ -36,12 +36,12 @@ class TransferControllerTestInMemory extends TestCase
         // Create accounts in memory
         $this->payerAccount = Account::factory()->create([
             'user_id' => $this->payer->id,
-            'balance' => 1000 * 100
+            'balance' => fake()->numberBetween(1000, 10000) * 100
         ]);
 
         $this->payeeAccount = Account::factory()->create([
             'user_id' => $this->payee->id,
-            'balance' => 500 * 100
+            'balance' => fake()->numberBetween(1000, 10000) * 100
         ]);
         
         // Link accounts to users
@@ -71,13 +71,13 @@ class TransferControllerTestInMemory extends TestCase
 
     public function testPayerMustExist(): void
     {
-        $nonExistentId = $this->payer->id + 1000;
+        $nonExistentId = fake()->numberBetween(1000, 9999);
         
         $request = Mockery::mock(Request::class);
         $request->shouldReceive('all')->andReturn([
             'payer' => $nonExistentId,
             'payee' => $this->payee->id,
-            'value' => 100.00
+            'value' => fake()->randomFloat(2, 0.01, 1000)
         ]);
 
         $request->shouldReceive('input')
@@ -88,7 +88,7 @@ class TransferControllerTestInMemory extends TestCase
             ->andReturn($this->payee->id);
         $request->shouldReceive('input')
             ->with('value')
-            ->andReturn(100.00);
+            ->andReturn(fake()->randomFloat(2, 0.01, 1000));
         
         $response = $this->controller->transfer($request);
         
@@ -98,13 +98,13 @@ class TransferControllerTestInMemory extends TestCase
 
     public function testPayeeMustExist(): void
     {
-        $nonExistentId = $this->payee->id + 1000;
+        $nonExistentId = fake()->numberBetween(1000, 9999);
         
         $request = Mockery::mock(Request::class);
         $request->shouldReceive('all')->andReturn([
             'payer' => $this->payer->id,
             'payee' => $nonExistentId,
-            'value' => 100.00
+            'value' => fake()->randomFloat(2, 0.01, 1000)
         ]);
 
         $request->shouldReceive('input')
@@ -115,7 +115,7 @@ class TransferControllerTestInMemory extends TestCase
             ->andReturn($nonExistentId);
         $request->shouldReceive('input')
             ->with('value')
-            ->andReturn(100.00);
+            ->andReturn(fake()->randomFloat(2, 0.01, 1000));
 
         $response = $this->controller->transfer($request);
         
@@ -129,7 +129,7 @@ class TransferControllerTestInMemory extends TestCase
         $request->shouldReceive('all')->andReturn([
             'payer' => $this->payer->id,
             'payee' => $this->payee->id,
-            'value' => 100.00
+            'value' => fake()->randomFloat(2, 0.01, 1000)
         ]);
         
         $request->shouldReceive('input')
@@ -140,7 +140,7 @@ class TransferControllerTestInMemory extends TestCase
             ->andReturn($this->payee->id);
         $request->shouldReceive('input')
             ->with('value')
-            ->andReturn(100.00);
+            ->andReturn(fake()->randomFloat(2, 0.01, 1000));
         
         $response = $this->controller->transfer($request);
         

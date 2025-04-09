@@ -17,7 +17,7 @@ class TransferJob implements ShouldQueue
     public function __construct(
         public User $payer,
         public User $payee,
-        public int $amount,
+        public int $balance,
     ) {
     }
 

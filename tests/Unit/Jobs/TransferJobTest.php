@@ -25,7 +25,7 @@ class TransferJobTest extends TestCase
         $this->assertInstanceOf(TransferJob::class, $job);
         $this->assertEquals(1, $job->payer->id);
         $this->assertEquals(2, $job->payee->id);
-        $this->assertEquals($amount, $job->amount);
+        $this->assertEquals($amount, $job->balance);
     }
 
     public function testJobHandleMethodLogsInfo(): void
@@ -57,7 +57,7 @@ class TransferJobTest extends TestCase
         Queue::assertPushed(TransferJob::class, function ($job) use ($payer, $payee, $amount) {
             return $job->payer === $payer &&
                    $job->payee === $payee &&
-                   $job->amount === $amount;
+                   $job->balance === $amount;
         });
     }
 
