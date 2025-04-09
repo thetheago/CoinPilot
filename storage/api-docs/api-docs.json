@@ -1,0 +1,127 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Bank API",
+        "description": "API para transferências bancárias",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/transfer": {
+            "post": {
+                "tags": [
+                    "Transferências"
+                ],
+                "summary": "Realiza uma transferência entre usuários",
+                "operationId": "a768977dcdad59041e2c7fdd8259e553",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "payer",
+                                    "payee",
+                                    "value"
+                                ],
+                                "properties": {
+                                    "payer": {
+                                        "description": "ID do usuário pagador",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "payee": {
+                                        "description": "ID do usuário a receber a transferência",
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "value": {
+                                        "description": "Valor da transferência",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 100.5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Transferência realizada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "example": "Transferência realizada com sucesso"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erro de validação",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "O campo payer é obrigatório."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Transação não autorizada.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Transação não autorizada."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erro interno.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Um erro inesperado ocorreu, tente novamente mais tarde."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Transferências",
+            "description": "Transferências"
+        }
+    ]
+}

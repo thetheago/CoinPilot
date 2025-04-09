@@ -16,9 +16,102 @@ use App\Http\Responses\UnknownErrorResponse;
 use App\Http\Responses\DomainErrorResponse;
 use App\Services\AuthorizeService;
 use App\Services\LogTransferService;
+use OpenApi\Attributes as OA;
 
+#[OA\Info(
+    version: "1.0.0",
+    title: "Bank API",
+    description: "API para transferências bancárias"
+)]
 class TransferController extends Controller
 {
+    #[OA\Post(
+        path: "/api/transfer",
+        summary: "Realiza uma transferência entre usuários",
+        tags: ["Transferências"]
+    )]
+    #[OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            required: ["payer", "payee", "value"],
+            properties: [
+                new OA\Property(
+                    property: "payer",
+                    type: "integer",
+                    example: 1,
+                    description: "ID do usuário pagador"
+                ),
+                new OA\Property(
+                    property: "payee",
+                    type: "integer",
+                    example: 2,
+                    description: "ID do usuário a receber a transferência"
+                ),
+                new OA\Property(
+                    property: "value",
+                    type: "number",
+                    format: "float",
+                    example: 100.50,
+                    description: "Valor da transferência"
+                )
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "Transferência realizada com sucesso",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(
+                    property: "data",
+                    type: "array",
+                    items: new OA\Items(
+                        type: "string",
+                        example: "Transferência realizada com sucesso"
+                    )
+                )
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 422,
+        description: "Erro de validação",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(
+                    property: "message",
+                    type: "string",
+                    example: "O campo payer é obrigatório."
+                )
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 401,
+        description: "Transação não autorizada.",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(
+                    property: "message",
+                    type: "string",
+                    example: "Transação não autorizada."
+                )
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 500,
+        description: "Erro interno.",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(
+                    property: "message",
+                    type: "string",
+                    example: "Um erro inesperado ocorreu, tente novamente mais tarde."
+                )
+            ]
+        )
+    )]
     public function transfer(Request $request): JsonResponse
     {
         try {
