@@ -132,10 +132,11 @@ class TransferControllerTest extends TestCase
     public function testValueMustHaveAtMostTwoDecimalPlaces(): void
     {
         $request = Mockery::mock(Request::class);
+
         $request->shouldReceive('all')->andReturn([
             'payer' => fake()->numberBetween(1, 100),
             'payee' => fake()->numberBetween(1, 100),
-            'value' => fake()->randomFloat(3, 0.01, 1000)
+            'value' => 30.241
         ]);
 
         $response = $this->controller->transfer($request);
