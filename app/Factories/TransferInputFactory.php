@@ -14,7 +14,7 @@ class TransferInputFactory implements IInputDTOFactory
     {
         $payer = $request->input('payer');
         $payee = $request->input('payee');
-        $value = $request->input('value');
+        $value = $request->input('value') * 100;
 
         return new TransferInput(
             payer: $payer,

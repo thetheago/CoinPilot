@@ -52,35 +52,28 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Get the account associated with the user.
-     */
     public function account(): HasOne
     {
         return $this->hasOne(Account::class, 'id', 'account_id');
     }
 
-    /**
-     * Get the user type as a Value Object.
-     */
     public function getUserType(): UserType
     {
         return new UserType($this->user_type);
     }
 
-    /**
-     * Check if the user is a merchant.
-     */
     public function isLojista(): bool
     {
         return $this->getUserType()->isLojista();
     }
 
-    /**
-     * Check if the user is a common user.
-     */
     public function isComum(): bool
     {
         return $this->getUserType()->isCommon();
+    }
+
+    public function getBalance(): float
+    {
+        return $this->account->balance;
     }
 }

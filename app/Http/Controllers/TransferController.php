@@ -10,45 +10,51 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Responses\ValidationErrorResponse;
 use App\Http\Responses\SuccessResponse;
 use App\Factories\TransferInputFactory;
+use App\Usecases\TransactUseCase;
+use App\Repositories\UserRepository;
+use App\Http\Responses\UnknownErrorResponse;
+use App\Http\Responses\DomainErrorResponse;
 
 class TransferController extends Controller
 {
     public function transfer(Request $request): JsonResponse
     {
-        $payload = $request->all();
+        try {
+            $payload = $request->all();
 
-        $validator = Validator::make($payload, [
-            'payer' => 'required|integer|exists:users,id',
-            'payee' => 'required|integer|exists:users,id',
-            'value' => 'required|numeric|min:0.01|decimal:0,2'
-        ], [
-            'payer.required' => 'O campo payer é obrigatório.',
-            'payer.integer' => 'O ID do payer deve ser um número inteiro.',
-            'payer.exists' => 'O payer informado não existe.',
-            'payee.required' => 'O campo payee é obrigatório.',
-            'payee.integer' => 'O ID do payee deve ser um número inteiro.',
-            'payee.exists' => 'O payee informado não existe.',
-            'value.required' => 'O campo value é obrigatório.',
-            'value.numeric' => 'O campo value deve ser um número.',
-            'value.min' => 'O campo value deve ser maior que zero.',
-            'value.decimal' => 'O campo value deve ser um número com duas casas decimais.'
-        ]);
+            $validator = Validator::make($payload, [
+                'payer' => 'required|integer',
+                'payee' => 'required|integer',
+                'value' => 'required|numeric|min:0.01|decimal:0,2'
+            ], [
+                'payer.required' => 'O campo payer é obrigatório.',
+                'payer.integer' => 'O ID do payer deve ser um número inteiro.',
+                'payee.required' => 'O campo payee é obrigatório.',
+                'payee.integer' => 'O ID do payee deve ser um número inteiro.',
+                'value.required' => 'O campo value é obrigatório.',
+                'value.numeric' => 'O campo value deve ser um número.',
+                'value.min' => 'O campo value deve ser maior que zero.',
+                'value.decimal' => 'O campo value deve ser um número com duas casas decimais.'
+            ]);
 
-        if ($validator->fails()) {
-            return ValidationErrorResponse::make(validator: $validator);
+            if ($validator->fails()) {
+                return ValidationErrorResponse::make(validator: $validator);
+            }
+
+            $input = TransferInputFactory::createFromRequest(request: $request);
+
+            $useCase = new TransactUseCase(userRepository: new UserRepository());
+            $useCase->execute(input: $input);
+
+            return SuccessResponse::make(data: ['Transferência realizada com sucesso']);
+
+            // Uma saída mais elegante seria utilizar o event listener do laravel para capturar as exceptions.
+        } catch (\DomainException $e) {
+            // TODO: Loggar erro $e;
+            return DomainErrorResponse::make(message: $e->getMessage());
+        } catch (\Exception $e) {
+            // TODO: Loggar erro $e;
+            return UnknownErrorResponse::make(message: "Um erro inesperado ocorreu, tente novamente mais tarde.");
         }
-
-        $input = TransferInputFactory::createFromRequest(request: $request);
-
-        // Outra saída seria um throw de alguma exception de negócio ou erro mesmo.
-        // Pretendo definir isso em event listener do laravel.
-        // (Ou colocar um try catch aqui para não utilizar metodos magicos do framework)
-        // $this->transferUseCase->execute($dto);
-
-        //$output = $useCase->execute($input);
-
-        // return TransactionResource::make($output)->response()->setStatusCode(Response::HTTP_CREATED);
-
-        return SuccessResponse::make(data: ['deu certo' => true]);
     }
 }
