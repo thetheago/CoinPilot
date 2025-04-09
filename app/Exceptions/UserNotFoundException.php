@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Exceptions;
 
-use Exception;
-
-class UserNotFoundException extends Exception
+class UserNotFoundException extends \DomainException
 {
     public function __construct(string $message = 'Usuário não encontrado', int $code = 404)
     {
