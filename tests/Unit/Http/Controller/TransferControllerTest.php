@@ -3,36 +3,17 @@
 namespace Tests\Unit\Http\Controller;
 
 use Tests\TestCase;
-use App\Models\User;
-use App\Models\Account;
 use App\Http\Controllers\TransferController;
 use Illuminate\Http\Request;
 use Mockery;
 
 class TransferControllerTest extends TestCase
 {
-    private User $payer;
-    private User $payee;
-    private Account $payerAccount;
-    private Account $payeeAccount;
     private TransferController $controller;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
-        $this->payer = Mockery::mock(User::class);
-        $this->payerAccount = Mockery::mock(Account::class);
-        $this->payer->shouldReceive('getAttribute')->with('account')->andReturn($this->payerAccount);
-        $this->payer->shouldReceive('isLojista')->andReturn(false);
-        $this->payerAccount->shouldReceive('getAttribute')->with('balance')->andReturn(1000.00);
-        
-        $this->payee = Mockery::mock(User::class);
-        $this->payeeAccount = Mockery::mock(Account::class);
-        $this->payee->shouldReceive('getAttribute')->with('account')->andReturn($this->payeeAccount);
-        $this->payee->shouldReceive('isLojista')->andReturn(false);
-        $this->payeeAccount->shouldReceive('getAttribute')->with('balance')->andReturn(500.00);
-        
         $this->controller = new TransferController();
     }
 

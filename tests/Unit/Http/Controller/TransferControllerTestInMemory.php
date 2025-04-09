@@ -147,4 +147,23 @@ class TransferControllerTestInMemory extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(['Transferência realizada com sucesso'], $response->getData(true));
     }
+
+    public function testUnauthorizedExceptionIsThrownWhenAuthorizationFails(): void
+    {
+        $request = Mockery::mock(Request::class);
+        $request->shouldReceive('all')->andReturn([
+            'payer' => fake()->numberBetween(1, 100),
+            'payee' => fake()->numberBetween(1, 100),
+            'value' => fake()->randomFloat(2, 0.01, 1000)
+        ]);
+
+        $request->shouldReceive('input')->with('payer')->andReturn(1);
+        $request->shouldReceive('input')->with('payee')->andReturn(2);
+        $request->shouldReceive('input')->with('value')->andReturn(100.00);
+
+        $response = $this->controller->transfer($request);
+
+        $this->assertEquals(401, $response->getStatusCode());
+        $this->assertEquals(['errors' => ['Transação não autorizada.']], $response->getData(true));
+    }
 }

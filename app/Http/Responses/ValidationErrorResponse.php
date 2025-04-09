@@ -6,10 +6,11 @@ namespace App\Http\Responses;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Validator;
+use Symfony\Component\HttpFoundation\Response;
 
 class ValidationErrorResponse extends AbstractErrorResponse
 {
-    protected const DEFAULT_STATUS_CODE = 422;
+    protected const DEFAULT_STATUS_CODE = Response::HTTP_UNPROCESSABLE_ENTITY;
 
     public static function make(Validator $validator, ?int $code = null): JsonResponse
     {

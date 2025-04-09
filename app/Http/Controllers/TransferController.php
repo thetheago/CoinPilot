@@ -14,6 +14,7 @@ use App\Usecases\TransactUseCase;
 use App\Repositories\UserRepository;
 use App\Http\Responses\UnknownErrorResponse;
 use App\Http\Responses\DomainErrorResponse;
+use App\Services\AuthorizeService;
 
 class TransferController extends Controller
 {
@@ -43,7 +44,10 @@ class TransferController extends Controller
 
             $input = TransferInputFactory::createFromRequest(request: $request);
 
-            $useCase = new TransactUseCase(userRepository: new UserRepository());
+            $useCase = new TransactUseCase(
+                userRepository: new UserRepository(),
+                authorizeService: new AuthorizeService()
+            );
             $useCase->execute(input: $input);
 
             return SuccessResponse::make(data: ['Transferência realizada com sucesso']);

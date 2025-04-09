@@ -8,11 +8,14 @@ use App\Dto\TransferInput;
 use App\Interface\IUserRepository;
 use App\Exceptions\LojistAsAPayerException;
 use App\Exceptions\UserNotFoundException;
+use App\Interface\IAuthorizeService;
+use App\Exceptions\UnauthorizedException;
 
 class TransactUseCase
 {
     public function __construct(
         private readonly IUserRepository $userRepository,
+        private readonly IAuthorizeService $authorizeService,
     ) {
     }
 
@@ -40,8 +43,10 @@ class TransactUseCase
                 throw new \DomainException('O payer não tem saldo suficiente para realizar a transação.');
             }
     
-            // TODO: Checar serviço verificador
-            // false -> throw new \DomainException('Não autorizado');
+            $isAuthorized = $this->authorizeService->checkAuthorization();
+            if (!$isAuthorized) {
+                throw new UnauthorizedException();
+            }
 
             // TODO: Manda para a fila
         } catch (UserNotFoundException $e) {
