@@ -127,6 +127,13 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        'transfer' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/transfer.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'replace_placeholders' => true,
+        ],
+
     ],
 
 ];

@@ -15,6 +15,7 @@ use App\Repositories\UserRepository;
 use App\Http\Responses\UnknownErrorResponse;
 use App\Http\Responses\DomainErrorResponse;
 use App\Services\AuthorizeService;
+use App\Services\LogTransferService;
 
 class TransferController extends Controller
 {
@@ -54,10 +55,9 @@ class TransferController extends Controller
 
             // Uma saída mais elegante seria utilizar o event listener do laravel para capturar as exceptions.
         } catch (\DomainException $e) {
-            // TODO: Loggar erro $e;
             return DomainErrorResponse::make(message: $e->getMessage());
         } catch (\Exception $e) {
-            // TODO: Loggar erro $e;
+            LogTransferService::error($e->getMessage(), ['context' => $e->getTraceAsString()]);
             return UnknownErrorResponse::make(message: "Um erro inesperado ocorreu, tente novamente mais tarde.");
         }
     }
