@@ -4,7 +4,8 @@
     "command-runner.terminal.autoFocus": true,
     "command-runner.commands": {
         "phpUnitRunTests": "docker compose exec coinpilot php vendor/bin/phpunit --stop-on-failure --no-coverage",
-        "phpcs": "composer run phpcs"
+        "phpcs": "composer run phpcs",
+        "generate-swagger": "docker compose exec coinpilot php artisan l5-swagger:generate"
     },
     "intelephense.environment.phpVersion": "8.4"
 }
