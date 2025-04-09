@@ -3,7 +3,8 @@
     "command-runner.terminal.autoClear": true,
     "command-runner.terminal.autoFocus": true,
     "command-runner.commands": {
-        "phpUnitRunTests": "docker compose exec coinpilot php vendor/bin/phpunit --stop-on-failure --no-coverage"
+        "phpUnitRunTests": "docker compose exec coinpilot php vendor/bin/phpunit --stop-on-failure --no-coverage",
+        "phpcs": "composer run phpcs"
     },
     "intelephense.environment.phpVersion": "8.4"
 }

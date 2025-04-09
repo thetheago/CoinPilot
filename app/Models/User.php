@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\ValueObjects\UserType;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable
 {
@@ -23,6 +25,8 @@ class User extends Authenticatable
         'email',
         'password',
         'cpf',
+        'account_id',
+        'user_type',
     ];
 
     /**
@@ -46,5 +50,30 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function account(): HasOne
+    {
+        return $this->hasOne(Account::class, 'id', 'account_id');
+    }
+
+    public function getUserType(): UserType
+    {
+        return new UserType($this->user_type);
+    }
+
+    public function isLojista(): bool
+    {
+        return $this->getUserType()->isLojista();
+    }
+
+    public function isComum(): bool
+    {
+        return $this->getUserType()->isCommon();
+    }
+
+    public function getBalance(): float
+    {
+        return $this->account->balance;
     }
 }
