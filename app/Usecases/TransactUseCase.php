@@ -10,6 +10,7 @@ use App\Exceptions\LojistAsAPayerException;
 use App\Exceptions\UserNotFoundException;
 use App\Interface\IAuthorizeService;
 use App\Exceptions\UnauthorizedException;
+use App\Jobs\TransferJob;
 
 class TransactUseCase
 {
@@ -33,24 +34,24 @@ class TransactUseCase
 
         try {
             $payee = $this->userRepository->getUserById($input->getPayee());
-    
-            if ($payer->isLojista()) {
-                throw new LojistAsAPayerException();
-            }
-    
-            // Checando da projeção
-            if ($payer->getBalance() < $input->getValue()) {
-                throw new \DomainException('O payer não tem saldo suficiente para realizar a transação.');
-            }
-    
-            $isAuthorized = $this->authorizeService->checkAuthorization();
-            if (!$isAuthorized) {
-                throw new UnauthorizedException();
-            }
-
-            // TODO: Manda para a fila
         } catch (UserNotFoundException $e) {
             throw new \DomainException("Payee {$input->getPayee()} não encontrado.");
         }
+    
+        if ($payer->isLojista()) {
+            throw new LojistAsAPayerException();
+        }
+
+        // Checando da projeção
+        if ($payer->getBalance() < $input->getValue()) {
+            throw new \DomainException('O payer não tem saldo suficiente para realizar a transação.');
+        }
+
+        $isAuthorized = $this->authorizeService->checkAuthorization();
+        if (!$isAuthorized) {
+            throw new UnauthorizedException();
+        }
+
+        TransferJob::dispatch(payer: $payer, payee: $payee, amount: $input->getValue());
     }
 }
