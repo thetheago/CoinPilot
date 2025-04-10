@@ -18,6 +18,12 @@
 ## ⚙️ Como Executar o Projeto
 - Abra o terminal no diretório do docker-compose.yml
 - Rode ```docker compose up```
+- As rotas estão disponiveis em http://localhost:8081/api/
+- http://localhost:8081/log-viewer para monitoramento (observabilidade)
+- http://localhost:8081/horizon para monitorar os jobs
+
+## 🐦 Documentação da API
+- Acesse http://localhost:8081/api/documentation
 
 ## 🗺️ Planejamento
 [https://miro.com/app/board/uXjVIG4qQQ8=/](https://miro.com/app/board/uXjVIG4qQQ8=/?share_link_id=416542207277)
