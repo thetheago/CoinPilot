@@ -18,6 +18,10 @@
 ## ⚙️ Como Executar o Projeto
 - Abra o terminal no diretório do docker-compose.yml
 - Rode ```docker compose up```
+- Será criado as tabelas e 3 usuários padrões para fazer testes:
+  - Id: 1 | Saldo :  385,15
+  - Id: 2 | Saldo :  800,90
+  - Id: 3 | Saldo :  209,01
 - As rotas estão disponiveis em http://localhost:8081/api/
 - http://localhost:8081/log-viewer para monitoramento (observabilidade)
 - http://localhost:8081/horizon para monitorar os jobs
