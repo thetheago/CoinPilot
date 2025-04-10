@@ -19,8 +19,8 @@
 - Abra o terminal no diretório do docker-compose.yml
 - Rode ```docker compose up```
 
-### Referências
-#### 📄 [Miro | Planejamento]
+### 📄 Referências
+#### [Miro | Planejamento]
 https://medium.com/@shek.up/domain-driven-design-for-banking-application-d6279ecdaf2  
 https://substack.wasteman.codes/p/engineering-principles-and-best-practices  
 https://youtu.be/f4GolIiNIvc?si=vZjRSSfduY3poki7
