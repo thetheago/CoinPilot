@@ -53,7 +53,7 @@ class EventsRepository implements IEventsRepository
                 Event::create([
                     'account_id' => $agregate->id,
                     'type' => class_basename($event),
-                    'payload' => json_encode($event),
+                    'payload' => json_encode($event->payload),
                     'version' => ++$version,
                 ]);
 

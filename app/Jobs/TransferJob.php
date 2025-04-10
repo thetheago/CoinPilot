@@ -50,7 +50,7 @@ class TransferJob implements ShouldQueue
             $events = $this->eventsRepository->getEventsOfAgregate($payerAccount);
             $payerAccount->applyEach($events);
 
-            if ($payerAccount->getBalance() < $this->balance) {
+            if ($payerAccount->balance < $this->balance) {
                 throw new NotEnoughCashException();
             }
 
@@ -73,6 +73,7 @@ class TransferJob implements ShouldQueue
             // TODO: Enviar notificação para o payer
         } catch (NotEnoughCashException $e) {
             // TODO: Enviar notificação para o payer
+            throw $e;
         } catch (Exception $e) {
             if ($withdrawWasPersisted) {
                 // TODO: Refund.

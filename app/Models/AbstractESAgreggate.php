@@ -15,12 +15,12 @@ abstract class AbstractESAgreggate extends Model implements IESAgregate
      */
     protected $pendingEvents = [];
 
-    protected function recordEvent(IEvent $event): void
+    public function recordEvent(IEvent $event): void
     {
         $this->pendingEvents[] = $event;
     }
 
-    protected function getPendingEvents(): array
+    public function getPendingEvents(): array
     {
         return $this->pendingEvents;
     }

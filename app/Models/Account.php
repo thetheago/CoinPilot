@@ -13,7 +13,7 @@ class Account extends AbstractESAgreggate
 {
     use HasFactory;
 
-    private int $versionOfLastEvent = 0;
+    public int $versionOfLastEvent = 0;
 
     /**
      * The attributes that are mass assignable.
@@ -35,6 +35,10 @@ class Account extends AbstractESAgreggate
 
     public function applyEach(Events $events): void
     {
+        if (count($events->getIterator()) === 0) {
+            return;
+        }
+
         foreach ($events as $event) {
             $method = 'apply' . $event->type . 'Event';
             $this->{$method}($event->payload);
@@ -73,17 +77,17 @@ class Account extends AbstractESAgreggate
 
     public function withdraw(int $balance): self
     {
-        $this->recordEvent(new Withdraw(json_encode(['balance' => $balance])));
+        $this->recordEvent(new Withdraw(['balance' => $balance]));
         return $this;
     }
 
     public function deposit(int $balance, int $idAccountPayer, int $idAccountPayee): self
     {
-        $this->recordEvent(new Deposit(json_encode([
+        $this->recordEvent(new Deposit([
             'account_payer' => $idAccountPayer,
             'account_payee' => $idAccountPayee,
             'balance' => $balance,
-        ])));
+        ]));
 
         return $this;
     }
