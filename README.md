@@ -29,6 +29,9 @@
 [https://miro.com/app/board/uXjVIG4qQQ8=/](https://miro.com/app/board/uXjVIG4qQQ8=/?share_link_id=416542207277)
 ![2025-04-10_11-02](https://github.com/user-attachments/assets/9aaaba94-cb58-4307-a195-576e22e22b51)
 
+## 📶 Cobertura de código
+Pelo limite de tempo infelizmente não consegui cobrir toda a aplicação, mas estava nos planos.
+![coverage](https://github.com/user-attachments/assets/a5cbac05-9c6e-4432-b549-243389bcc407)
 
 ### 📄 Referências
 #### [Miro | Planejamento]
