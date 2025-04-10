@@ -34,20 +34,6 @@ class Account extends AbstractESAgreggate
         return $this->belongsTo(User::class);
     }
 
-    public function applyEach(Events $events): void
-    {
-        if (count($events->getIterator()) === 0) {
-            return;
-        }
-
-        foreach ($events as $event) {
-            $method = 'apply' . $event->type . 'Event';
-            $this->{$method}($event->payload);
-
-            $this->versionOfLastEvent = $event->version;
-        }
-    }
-
     public function applyDepositEvent(string $payload): self
     {
         $payload = json_decode($payload, true);
