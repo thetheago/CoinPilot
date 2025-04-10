@@ -32,4 +32,43 @@ class EventsRepositoryTest extends TestCase
         $this->assertCount(1, $events->getIterator());
         $this->assertEquals($event->id, $events->getIterator()->current()->id);
     }
+
+    public function testEventsShouldBeOrderedByVersion(): void
+    {
+        $firstVersion = 0;
+        $secondVersion = 1;
+        $thirdVersion = 2;
+
+        $account = Account::factory()->create();
+        Event::factory()->create([
+            'account_id' => $account->id,
+            'type' => 'deposit',
+            'payload' => json_encode(['account_payer' => 3, 'account_payee' => $account->id, 'balance' => 3021]),
+            'version' => $firstVersion,
+        ]);
+
+        Event::factory()->create([
+            'account_id' => $account->id,
+            'type' => 'withdraw',
+            'payload' => json_encode(['balance' => 120]),
+            'version' => $secondVersion,
+        ]);
+
+        Event::factory()->create([
+            'account_id' => $account->id,
+            'type' => 'deposit',
+            'payload' => json_encode(['account_payer' => 3, 'account_payee' => $account->id, 'balance' => 9811]),
+            'version' => $thirdVersion,
+        ]);
+
+        $repository = new EventsRepository();
+        $events = $repository->getEventsOfAgregate($account);
+
+        $i = 0;
+
+        foreach ($events as $event) {
+            $this->assertEquals($i, $event->version);
+            $i++;
+        }
+    }
 }

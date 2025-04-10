@@ -6,8 +6,9 @@ namespace App\ValueObjects;
 
 use ArrayIterator;
 use App\Models\Event;
+use IteratorAggregate;
 
-class Events extends ArrayIterator
+class Events implements IteratorAggregate
 {
     /**
      * @var Event[]

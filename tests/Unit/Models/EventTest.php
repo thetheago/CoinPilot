@@ -55,4 +55,4 @@ class EventTest extends TestCase
         $this->assertNotNull($event->version);
         $this->assertNotNull($event->account_id);
     }
-} 
+}

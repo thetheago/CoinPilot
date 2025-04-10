@@ -13,7 +13,7 @@ class EventsRepository implements IEventsRepository
 {
     public function getEventsOfAgregate(Account $agregate): Events
     {
-        $eventsCollection = Event::where('account_id', $agregate->id)->get();
+        $eventsCollection = Event::where('account_id', $agregate->id)->orderBy('version', 'asc')->get();
 
         $events = new Events();
 
