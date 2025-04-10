@@ -11,6 +11,8 @@ use App\Exceptions\UserNotFoundException;
 use App\Interface\IAuthorizeService;
 use App\Exceptions\UnauthorizedException;
 use App\Jobs\TransferJob;
+use App\Exceptions\NotEnoughCashException;
+use App\Repositories\EventsRepository;
 
 class TransactUseCase
 {
@@ -44,7 +46,7 @@ class TransactUseCase
 
         // Checando da projeção
         if ($payer->getBalance() < $input->getValue()) {
-            throw new \DomainException('O payer não tem saldo suficiente para realizar a transação.');
+            throw new NotEnoughCashException();
         }
 
         $isAuthorized = $this->authorizeService->checkAuthorization();
@@ -52,6 +54,11 @@ class TransactUseCase
             throw new UnauthorizedException();
         }
 
-        TransferJob::dispatch(payer: $payer, payee: $payee, balance: $input->getValue());
+        TransferJob::dispatch(
+            payer: $payer,
+            payee: $payee,
+            balance: $input->getValue(),
+            eventsRepository: new EventsRepository()
+        );
     }
 }

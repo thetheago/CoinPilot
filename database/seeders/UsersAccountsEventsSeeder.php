@@ -7,8 +7,9 @@ use App\Models\User;
 use App\ValueObjects\UserType;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Event;
 
-class UsersAndAccountsSeeder extends Seeder
+class UsersAccountsEventsSeeder extends Seeder
 {
     public function run(): void
     {
@@ -22,7 +23,7 @@ class UsersAndAccountsSeeder extends Seeder
 
         $account1 = Account::create([
             'user_id' => $user1->id,
-            'balance' => 1015, // 10,15 reais
+            'balance' => 38515, // 385,15 reais
         ]);
 
         $user1->account_id = $account1->id;
@@ -38,7 +39,7 @@ class UsersAndAccountsSeeder extends Seeder
 
         $account2 = Account::create([
             'user_id' => $user2->id,
-            'balance' => 1590, // 15,90 reais
+            'balance' => 80090, // 800,90 reais
         ]);
 
         $user2->account_id = $account2->id;
@@ -54,10 +55,32 @@ class UsersAndAccountsSeeder extends Seeder
 
         $account3 = Account::create([
             'user_id' => $user3->id,
-            'balance' => 2001, // 20,01 reais
+            'balance' => 20901, // 209,01 reais
         ]);
 
         $user3->account_id = $account3->id;
         $user3->save();
+
+        Event::factory()->create([
+            'account_id' => 1,
+            'type' => 'Deposit',
+            'payload' => json_encode(['balance' => 38515]),
+            'version' => 0
+        ]);
+
+        Event::factory()->create([
+            'account_id' => 2,
+            'type' => 'Deposit',
+            'payload' => json_encode(['balance' => 80090]),
+            'version' => 0
+        ]);
+
+        Event::factory()->create([
+            'account_id' => 3,
+            'type' => 'Deposit',
+            'payload' => json_encode(['balance' => 20901]),
+            'version' => 0
+        ]);
+
     }
 } 
