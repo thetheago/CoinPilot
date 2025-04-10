@@ -10,6 +10,6 @@ Route::post('/transfer', [TransferController::class, 'transfer']);
 Route::post('/dispatch', function () {
     // TransferJob::dispatch(User::find(1), User::find(2), 100.32);
 
-    $transferJob = new TransferJob(User::find(1), User::find(2), 100, new \App\Repositories\EventsRepository());
+    $transferJob = new TransferJob(User::find(1), User::find(2), 10 * 100, new \App\Repositories\EventsRepository());
     $transferJob->handle();
 });

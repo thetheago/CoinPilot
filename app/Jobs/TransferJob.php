@@ -47,6 +47,9 @@ class TransferJob implements ShouldQueue
              */
             $payeeAccount = $this->payee->account;
 
+            $payerAccount->balance = 0;
+            $payeeAccount->balance = 0;
+
             $events = $this->eventsRepository->getEventsOfAgregate($payerAccount);
             $payerAccount->applyEach($events);
 

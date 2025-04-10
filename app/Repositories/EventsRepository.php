@@ -49,6 +49,8 @@ class EventsRepository implements IEventsRepository
                 );
             }
 
+            $eventsToReplicateInAgregate = new Events();
+
             foreach ($pendingEvents as $event) {
                 Event::create([
                     'account_id' => $agregate->id,
@@ -57,10 +59,17 @@ class EventsRepository implements IEventsRepository
                     'version' => ++$version,
                 ]);
 
-                $agregate->versionOfLastEvent = $version;
+                $eventsToReplicateInAgregate->addEvent(new Event([
+                    'type' => class_basename($event),
+                    'payload' => json_encode($event->payload),
+                    'version' => ++$version,
+                    'account_id' => $agregate->id
+                ]));
             }
 
             // Atualiza a projeção com o balance atualizado.
+            $agregate->applyEach($eventsToReplicateInAgregate);
+            $agregate->touch();
             $agregate->save();
 
             DB::commit();

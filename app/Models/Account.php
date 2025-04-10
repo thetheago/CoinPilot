@@ -36,8 +36,6 @@ class Account extends AbstractESAgreggate
 
     public function applyEach(Events $events): void
     {
-        $this->balance = 0;
-
         if (count($events->getIterator()) === 0) {
             return;
         }

@@ -7,8 +7,9 @@ use App\Models\User;
 use App\ValueObjects\UserType;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Event;
 
-class UsersAndAccountsSeeder extends Seeder
+class UsersAccountsEventsSeeder extends Seeder
 {
     public function run(): void
     {
@@ -59,5 +60,27 @@ class UsersAndAccountsSeeder extends Seeder
 
         $user3->account_id = $account3->id;
         $user3->save();
+
+        Event::factory()->create([
+            'account_id' => 1,
+            'type' => 'Deposit',
+            'payload' => json_encode(['balance' => 38515]),
+            'version' => 0
+        ]);
+
+        Event::factory()->create([
+            'account_id' => 2,
+            'type' => 'Deposit',
+            'payload' => json_encode(['balance' => 80090]),
+            'version' => 0
+        ]);
+
+        Event::factory()->create([
+            'account_id' => 3,
+            'type' => 'Deposit',
+            'payload' => json_encode(['balance' => 20901]),
+            'version' => 0
+        ]);
+
     }
 } 
