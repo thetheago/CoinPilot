@@ -18,7 +18,7 @@ class AccountTest extends TestCase
         
         $events = new Events();
         $event = new Event([
-            'type' => 'deposit',
+            'type' => 'Deposit',
             'payload' => json_encode(['balance' => $balanceToDeposit]),
             'version' => 1
         ]);
@@ -37,7 +37,7 @@ class AccountTest extends TestCase
         
         $events = new Events();
         $event = new Event([
-            'type' => 'withdraw',
+            'type' => 'Withdraw',
             'payload' => json_encode(['balance' => $balanceToWithdraw]),
             'version' => 1
         ]);
@@ -60,17 +60,17 @@ class AccountTest extends TestCase
         $events = new Events();
         
         $depositEvent1 = new Event([
-            'type' => 'deposit',
+            'type' => 'Deposit',
             'payload' => json_encode(['balance' => $balanceToDeposit]),
             'version' => 1
         ]);
         $withdrawEvent = new Event([
-            'type' => 'withdraw',
+            'type' => 'Withdraw',
             'payload' => json_encode(['balance' => $balanceToWithdraw]),
             'version' => 1
         ]);
         $depositEvent2 = new Event([
-            'type' => 'deposit',
+            'type' => 'Deposit',
             'payload' => json_encode(['balance' => $balanceToDeposit2]),
             'version' => 1
         ]);

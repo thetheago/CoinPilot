@@ -25,7 +25,7 @@ class EventTest extends TestCase
     {
         $account = Account::factory()->create();
         $event = Event::factory()->create([
-            'type' => 'deposit',
+            'type' => 'Deposit',
             'payload' => json_encode(['account_payer' => 3, 'account_payee' => $account->id, 'balance' => 3021]),
             'version' => 0,
             'account_id' => $account->id,
@@ -39,7 +39,7 @@ class EventTest extends TestCase
     {
         $account = Account::factory()->create();
         $event = Event::factory()->create([
-            'type' => 'deposit',
+            'type' => 'Deposit',
             'payload' => json_encode([
                 'account_payer' => 3,
                 'account_payee' => $account->id,

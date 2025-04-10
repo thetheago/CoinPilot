@@ -20,7 +20,7 @@ class EventsRepositoryTest extends TestCase
         $account = Account::factory()->create();
         $event = Event::factory()->create([
             'account_id' => $account->id,
-            'type' => 'deposit',
+            'type' => 'Deposit',
             'payload' => json_encode(['account_payer' => 3, 'account_payee' => $account->id, 'balance' => 3021]),
             'version' => 0,
         ]);
@@ -42,21 +42,21 @@ class EventsRepositoryTest extends TestCase
         $account = Account::factory()->create();
         Event::factory()->create([
             'account_id' => $account->id,
-            'type' => 'deposit',
+            'type' => 'Deposit',
             'payload' => json_encode(['account_payer' => 3, 'account_payee' => $account->id, 'balance' => 3021]),
             'version' => $firstVersion,
         ]);
 
         Event::factory()->create([
             'account_id' => $account->id,
-            'type' => 'withdraw',
+            'type' => 'Withdraw',
             'payload' => json_encode(['balance' => 120]),
             'version' => $secondVersion,
         ]);
 
         Event::factory()->create([
             'account_id' => $account->id,
-            'type' => 'deposit',
+            'type' => 'Deposit',
             'payload' => json_encode(['account_payer' => 3, 'account_payee' => $account->id, 'balance' => 9811]),
             'version' => $thirdVersion,
         ]);

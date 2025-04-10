@@ -2,16 +2,18 @@
 
 namespace App\Models;
 
+use App\Events\Withdraw;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Interface\IESAgregate;
 use App\ValueObjects\Events;
 use BcMath\Number;
+use App\Events\Deposit;
 
-class Account extends Model implements IESAgregate
+class Account extends AbstractESAgreggate
 {
     use HasFactory;
+
+    private int $versionOfLastEvent = 0;
 
     /**
      * The attributes that are mass assignable.
@@ -34,12 +36,14 @@ class Account extends Model implements IESAgregate
     public function applyEach(Events $events): void
     {
         foreach ($events as $event) {
-            $method = $event->type . 'EventApply';
+            $method = 'apply' . $event->type . 'Event';
             $this->{$method}($event->payload);
+
+            $this->versionOfLastEvent = $event->version;
         }
     }
 
-    public function depositEventApply(string $payload): self
+    public function applyDepositEvent(string $payload): self
     {
         $payload = json_decode($payload, true);
 
@@ -53,7 +57,7 @@ class Account extends Model implements IESAgregate
         return $this;
     }
 
-    public function withdrawEventApply(string $payload): self
+    public function applyWithdrawEvent(string $payload): self
     {
         $payload = json_decode($payload, true);
 
@@ -63,6 +67,23 @@ class Account extends Model implements IESAgregate
         $sub = $balance->sub($balanceToSubtract);
 
         $this->balance = (int) $sub->value;
+
+        return $this;
+    }
+
+    public function withdraw(int $balance): self
+    {
+        $this->recordEvent(new Withdraw(json_encode(['balance' => $balance])));
+        return $this;
+    }
+
+    public function deposit(int $balance, int $idAccountPayer, int $idAccountPayee): self
+    {
+        $this->recordEvent(new Deposit(json_encode([
+            'account_payer' => $idAccountPayer,
+            'account_payee' => $idAccountPayee,
+            'balance' => $balance,
+        ])));
 
         return $this;
     }

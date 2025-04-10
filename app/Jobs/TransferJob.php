@@ -34,6 +34,8 @@ class TransferJob implements ShouldQueue
      */
     public function handle(): void
     {
+        $withdrawWasPersisted = false;
+
         try {
             /**
              * @var Account $payerAccount
@@ -52,17 +54,30 @@ class TransferJob implements ShouldQueue
                 throw new NotEnoughCashException();
             }
 
-            // $payerAccount->withdraw($this->balance);
+            $payerAccount->withdraw($this->balance);
+            $this->eventsRepository->persistAgreggateEvents($payerAccount);
 
-            // TODO: Se alguma falha ocorrer aqui, entre o withdraw e o deposit deve gerar um job de refund.
 
-            // $payeeAccount->deposit($this->balance);
+            $withdrawWasPersisted = true;
+
+
+            $payeeAccount->deposit(
+                balance: $this->balance,
+                idAccountPayer: $payerAccount->id,
+                idAccountPayee: $payeeAccount->id
+            );
+
+            $this->eventsRepository->persistAgreggateEvents($payeeAccount);
 
             // TODO: Atualiza projeções.
             // TODO: Enviar notificação para o payer
         } catch (NotEnoughCashException $e) {
             // TODO: Enviar notificação para o payer
         } catch (Exception $e) {
+            if ($withdrawWasPersisted) {
+                // TODO: Refund.
+            }
+
             LogTransferService::critical($e->getMessage(), [$e->getTraceAsString()]);
         }
     }

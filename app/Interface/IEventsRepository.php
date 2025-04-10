@@ -10,4 +10,6 @@ use App\ValueObjects\Events;
 interface IEventsRepository
 {
     public function getEventsOfAgregate(Account $agregate): Events;
+    public function persistAgreggateEvents(Account $agregate): void;
+    public function getVersionOfLastEvent(Account $agregate): int;
 }
