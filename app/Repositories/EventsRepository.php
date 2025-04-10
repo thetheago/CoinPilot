@@ -13,9 +13,14 @@ class EventsRepository implements IEventsRepository
 {
     public function getEventsOfAgregate(Account $agregate): Events
     {
-        $events = Event::where('account_id', $agregate->id)->get();
+        $eventsCollection = Event::where('account_id', $agregate->id)->get();
 
-        // TODO: Verificar se funciona desse jeito.
-        return new Events($events);
+        $events = new Events();
+
+        foreach ($eventsCollection->toArray() as $event) {
+            $events->addEvent($event);
+        }
+
+        return $events;
     }
 }
