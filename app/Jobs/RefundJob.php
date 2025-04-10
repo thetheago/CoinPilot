@@ -11,7 +11,7 @@ use App\Models\Account;
 use App\Interface\IEventsRepository;
 use Exception;
 use App\Services\LogTransferService;
-
+use App\Exceptions\ConcurrencyException;
 class RefundJob implements ShouldQueue
 {
     use Queueable;
@@ -32,23 +32,30 @@ class RefundJob implements ShouldQueue
      */
     public function handle(): void
     {
-        try {
-            /**
-             * @var Account $payerAccount
-             */
-            $payerAccount = $this->payer->account;
+        while (true) {
+            try {
+                /**
+                 * @var Account $payerAccount
+                 */
+                $payerAccount = $this->payer->account;
 
-            $events = $this->eventsRepository->getEventsOfAgregate($payerAccount);
-            $payerAccount->applyEach($events);
+                $payerAccount->balance = 0;
 
-            $payerAccount->refund(balance: $this->balance);
+                $events = $this->eventsRepository->getEventsOfAgregate($payerAccount);
+                $payerAccount->applyEach($events);
 
-            $this->eventsRepository->persistAgreggateEvents($payerAccount);
+                $payerAccount->refund(balance: $this->balance);
 
-            // TODO: Enviar notificação para o payer sobre o reembolso
-        } catch (Exception $e) {
-            LogTransferService::critical($e->getMessage(), [$e->getTraceAsString()]);
-            throw $e;
+                $this->eventsRepository->persistAgreggateEvents($payerAccount);
+
+                // TODO: Enviar notificação para o payer sobre o reembolso
+                return;
+            } catch (Exception $e) {
+                LogTransferService::critical($e->getMessage(), [$e->getTraceAsString()]);
+                throw $e;
+            } catch (ConcurrencyException $e) {
+                LogTransferService::warning($e->getMessage(), [$e->getTraceAsString()]);
+            }
         }
     }
 }
