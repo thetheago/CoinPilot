@@ -6,6 +6,7 @@ namespace Tests\Unit\Usecases;
 
 use App\Dto\TransferInput;
 use App\Exceptions\LojistAsAPayerException;
+use App\Exceptions\NotEnoughCashException;
 use App\Interface\IUserRepository;
 use App\Interface\IAuthorizeService;
 use App\Models\User;
@@ -55,6 +56,7 @@ class TransactUseCaseTest extends TestCase
         $input->shouldReceive('getPayee')->andReturn($payeeId);
         $input->shouldReceive('getValue')->andReturn(fake()->randomFloat(2, 0.01, 1000));
 
+        /** @disregard */
         $this->userRepository->shouldReceive('getUserById')
             ->times(2)
             ->andReturnUsing(fn($id) => match ($id) {
@@ -67,8 +69,8 @@ class TransactUseCaseTest extends TestCase
 
     public function testShouldThrowExceptionWhenPayerHasInsufficientBalance(): void
     {
-        $this->expectException(\DomainException::class);
-        $this->expectExceptionMessage('O payer não tem saldo suficiente para realizar a transação.');
+        $this->expectException(NotEnoughCashException::class);
+        $this->expectExceptionMessage('Saldo insuficiente para a transferência.');
 
         $payer = Mockery::mock(User::class);
         $payer->shouldReceive('isLojista')->andReturn(false);
@@ -85,6 +87,7 @@ class TransactUseCaseTest extends TestCase
         $input->shouldReceive('getPayee')->andReturn($payeeId);
         $input->shouldReceive('getValue')->andReturn(fake()->randomFloat(2, 100, 1000));
 
+        /** @disregard */
         $this->userRepository->shouldReceive('getUserById')
             ->times(2)
             ->andReturnUsing(fn($id) => match ($id) {
@@ -115,6 +118,7 @@ class TransactUseCaseTest extends TestCase
         $input->shouldReceive('getPayee')->andReturn($payeeId);
         $input->shouldReceive('getValue')->andReturn($value);
 
+        /** @disregard */
         $this->userRepository->shouldReceive('getUserById')
             ->times(2)
             ->andReturnUsing(fn($id) => match ($id) {
@@ -122,6 +126,7 @@ class TransactUseCaseTest extends TestCase
                 $payeeId => $payee
             });
 
+        /** @disregard */
         $this->authorizeService->shouldReceive('checkAuthorization')->andReturn(true);
 
         $this->useCase->execute($input);
@@ -133,6 +138,7 @@ class TransactUseCaseTest extends TestCase
     {
         $this->expectException(UnauthorizedException::class);
 
+        /** @disregard */
         $this->authorizeService->shouldReceive('checkAuthorization')->andReturn(false);
 
         $payer = Mockery::mock(User::class);
@@ -150,6 +156,7 @@ class TransactUseCaseTest extends TestCase
         $input->shouldReceive('getPayee')->andReturn($payeeId);
         $input->shouldReceive('getValue')->andReturn(fake()->randomFloat(2, 0.01, 1000));
 
+        /** @disregard */
         $this->userRepository->shouldReceive('getUserById')
             ->times(2)
             ->andReturnUsing(fn($id) => match ($id) {
