@@ -12,6 +12,7 @@ use Exception;
 use App\Services\LogTransferService;
 use App\Models\Account;
 use App\Interface\IEventsRepository;
+use App\Services\MailNotificationService;
 
 class TransferJob implements ShouldQueue
 {
@@ -73,9 +74,11 @@ class TransferJob implements ShouldQueue
             $payeeAccount->applyEach($events);
             $this->eventsRepository->persistAgreggateEvents($payeeAccount);
 
-            // TODO: Enviar notificação para o payer
+            (new MailNotificationService())->sendNotification('Você recebeu ' . $this->balance / 100 . ' reais.');
         } catch (NotEnoughCashException $e) {
-            // TODO: Enviar notificação para o payer
+            (new MailNotificationService())->sendNotification(
+                'Você não tem saldo suficiente para realizar a transferência.'
+            );
             throw $e;
         } catch (Exception $e) {
             if ($withdrawWasPersisted) {
