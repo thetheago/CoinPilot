@@ -4,7 +4,7 @@
 
 ## 🚀 Tecnologias Utilizadas
 
-- PHP 8.x
+- PHP 8.4
 - [Laravel 12](https://laravel.com/)
 - Composer
 - Docker & compose
