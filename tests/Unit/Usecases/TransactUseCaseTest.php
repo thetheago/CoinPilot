@@ -16,6 +16,7 @@ use App\Exceptions\UnauthorizedException;
 use Mockery;
 use App\Jobs\TransferJob;
 use Illuminate\Support\Facades\Queue;
+use App\Exceptions\UserNotFoundException;
 
 class TransactUseCaseTest extends TestCase
 {
@@ -163,6 +164,67 @@ class TransactUseCaseTest extends TestCase
                 $payerId => $payer,
                 $payeeId => $payee
             });
+
+        $this->useCase->execute($input);
+    }
+
+    public function testPayeeNotFound(): void
+    {
+        $payeeId = fake()->numberBetween(1, 100);
+
+        $this->expectException(UserNotFoundException::class);
+        $this->expectExceptionMessage("Payee {$payeeId} não encontrado.");
+
+        $input = Mockery::mock(TransferInput::class);
+        $payerId = fake()->numberBetween(1, 100);
+        $payeeId = $payeeId;
+        $input->shouldReceive('getPayer')->andReturn($payerId);
+        $input->shouldReceive('getPayee')->andReturn($payeeId);
+        $input->shouldReceive('getValue')->andReturn(fake()->randomFloat(2, 0.01, 1000));
+
+        $payer = Mockery::mock(User::class);
+        $payer->shouldReceive('isLojista')->andReturn(false);
+        $payer->shouldReceive('getBalance')->andReturn(fake()->randomFloat(2, 1000, 10000));
+
+        $this->userRepository->shouldReceive('getUserById')
+            ->with($payerId)
+            ->andReturn($payer);
+
+        $this->userRepository->shouldReceive('getUserById')
+            ->with($payeeId)
+            ->andThrow(new UserNotFoundException());
+
+        $this->useCase->execute($input);
+    }
+
+    public function testPayerNotFound(): void
+    {
+        $payerId = fake()->numberBetween(1, 100);
+        $payeeId = fake()->numberBetween(1, 100);
+
+        $this->expectException(UserNotFoundException::class);
+        $this->expectExceptionMessage("Payer {$payerId} não encontrado.");
+
+        $input = Mockery::mock(TransferInput::class);
+        $input->shouldReceive('getPayer')->andReturn($payerId);
+        $input->shouldReceive('getPayee')->andReturn($payeeId);
+        $input->shouldReceive('getValue')->andReturn(fake()->randomFloat(2, 0.01, 1000));
+
+        $payer = Mockery::mock(User::class);
+        $payer->shouldReceive('isLojista')->andReturn(false);
+        $payer->shouldReceive('getBalance')->andReturn(fake()->randomFloat(2, 1000, 10000));
+
+        $this->userRepository->shouldReceive('getUserById')
+            ->with($payerId)
+            ->andThrow(new UserNotFoundException());
+
+        $payee = Mockery::mock(User::class);
+        $payee->shouldReceive('isLojista')->andReturn(false);
+        $payee->shouldReceive('getBalance')->andReturn(fake()->randomFloat(2, 0, 1000));
+
+        $this->userRepository->shouldReceive('getUserById')
+            ->with($payeeId)
+            ->andReturn($payee);
 
         $this->useCase->execute($input);
     }
