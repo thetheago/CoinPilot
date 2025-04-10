@@ -10,6 +10,9 @@ use App\Repositories\EventsRepository;
 use App\ValueObjects\Events;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Mockery;
+use App\Events\Deposit;
+use App\Exceptions\ConcurrencyException;
 
 class EventsRepositoryTest extends TestCase
 {
@@ -70,5 +73,46 @@ class EventsRepositoryTest extends TestCase
             $this->assertEquals($i, $event->version);
             $i++;
         }
+    }
+
+    public function testPersistAgreggateEventsMustReturnIfAgregateHasNoEvents(): void
+    {
+        $account = Account::factory()->create();
+        $repository = new EventsRepository();
+        $repository->persistAgreggateEvents($account);
+
+        $this->assertDatabaseCount('events', 0);
+    }
+
+    public function testOptimisticLock(): void
+    {
+        $account = Account::factory()->create();
+
+        Event::factory()->create([
+            'account_id' => $account->id,
+            'type' => 'Deposit',
+            'payload' => json_encode(['account_payer' => 3, 'account_payee' => $account->id, 'balance' => 3021]),
+            'version' => 3,
+        ]);
+
+        $accountMock = Mockery::mock(Account::class);
+        $accountMock->shouldReceive('getAttribute')->with('id')->andReturn($account->id);
+
+        $eventsMock = Mockery::mock(Events::class);
+        $eventsMock->shouldReceive('getIterator')->andReturn([Mockery::mock(Event::class)]);
+
+        $accountMock->shouldReceive('getPendingEvents')->andReturn([new Deposit(
+            ['account_payer' => 3,
+            'account_payee' => $account->id,
+            'balance' => 3021]
+            )
+        ]);
+        $accountMock->shouldReceive('getAttribute')->with('versionOfLastEvent')->andReturn(1);
+
+        $repository = new EventsRepository();
+        $this->expectException(ConcurrencyException::class);
+        $this->expectExceptionMessage('Conflito de concorrência.
+                    Versão esperada: 0, Versão do banco: 3');
+        $repository->persistAgreggateEvents($accountMock);
     }
 }
