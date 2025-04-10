@@ -12,6 +12,8 @@ use App\Interface\IEventsRepository;
 use Exception;
 use App\Services\LogTransferService;
 use App\Exceptions\ConcurrencyException;
+use App\Services\MailNotificationService;
+
 class RefundJob implements ShouldQueue
 {
     use Queueable;
@@ -48,7 +50,9 @@ class RefundJob implements ShouldQueue
 
                 $this->eventsRepository->persistAgreggateEvents($payerAccount);
 
-                // TODO: Enviar notificação para o payer sobre o reembolso
+                (new MailNotificationService())->sendNotification(
+                    'Você recebeu um reembolso de ' . $this->balance / 100 . ' reais.'
+                );
                 return;
             } catch (Exception $e) {
                 LogTransferService::critical($e->getMessage(), [$e->getTraceAsString()]);
