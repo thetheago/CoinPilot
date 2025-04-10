@@ -25,19 +25,20 @@ class TransactUseCase
     /**
      * @throws LojistAsAPayerException
      * @throws \DomainException
+     * @throws UserNotFoundException
      */
     public function execute(TransferInput $input): void
     {
         try {
             $payer = $this->userRepository->getUserById($input->getPayer());
         } catch (UserNotFoundException $e) {
-            throw new \DomainException("Payer {$input->getPayer()} não encontrado.");
+            throw new UserNotFoundException("Payer {$input->getPayer()} não encontrado.");
         }
 
         try {
             $payee = $this->userRepository->getUserById($input->getPayee());
         } catch (UserNotFoundException $e) {
-            throw new \DomainException("Payee {$input->getPayee()} não encontrado.");
+            throw new UserNotFoundException("Payee {$input->getPayee()} não encontrado.");
         }
     
         if ($payer->isLojista()) {
