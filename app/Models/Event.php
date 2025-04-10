@@ -6,18 +6,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Event extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'type',
         'payload',
         'version',
         'account_id'
-    ];
-
-    protected $casts = [
-        'payload' => 'array',
     ];
 
     public function account(): BelongsTo

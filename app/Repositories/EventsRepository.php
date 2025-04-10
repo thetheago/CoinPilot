@@ -17,7 +17,7 @@ class EventsRepository implements IEventsRepository
 
         $events = new Events();
 
-        foreach ($eventsCollection->toArray() as $event) {
+        foreach ($eventsCollection as $event) {
             $events->addEvent($event);
         }
 
