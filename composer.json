@@ -9,6 +9,7 @@
         "php": "^8.4",
         "darkaonline/l5-swagger": "*",
         "laravel/framework": "^12.0",
+        "laravel/horizon": "^5.31",
         "laravel/tinker": "^2.10.1",
         "opcodesio/log-viewer": "^3.15"
     },

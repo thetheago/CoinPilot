@@ -19,6 +19,7 @@ class TransferJob implements ShouldQueue
         public User $payee,
         public int $balance,
     ) {
+        $this->onQueue('transfer');
     }
 
     /**

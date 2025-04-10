@@ -1,6 +1,14 @@
 version: '3.8'
 
 services:
+    redis:
+        image: redis:7
+        container_name: redis
+        ports:
+            - "6379:6379"
+        networks:
+            - coinnetwork
+
     coinpilot:
         build:
             context: ./docker
@@ -14,6 +22,8 @@ services:
             - "host.docker.internal:host-gateway"
         ports:
             - "8081:8000"
+        depends_on:
+            - redis
         command: >
             sh -c "cp .env.example .env &&
                    touch database/database.sqlite &&
@@ -21,3 +31,37 @@ services:
                    composer dump-autoload &&
                    php artisan migrate &&
                    php artisan serve --host=0.0.0.0 --port=8000"
+        networks:
+            - coinnetwork
+
+    worker1:
+        build:
+            context: ./docker
+        container_name: worker1
+        working_dir: /var/www/html
+        volumes:
+            - ./:/var/www/html
+        depends_on:
+            - redis
+            - coinpilot
+        command: php artisan queue:work redis --queue=transfer --timeout=0
+        networks:
+            - coinnetwork
+
+    worker2:
+        build:
+            context: ./docker
+        container_name: worker2
+        working_dir: /var/www/html
+        volumes:
+            - ./:/var/www/html
+        depends_on:
+            - redis
+            - coinpilot
+        command: php artisan queue:work redis --queue=transfer --timeout=0
+        networks:
+            - coinnetwork
+
+networks:
+  coinnetwork:
+    driver: bridge
