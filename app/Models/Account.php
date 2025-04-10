@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\ValueObjects\Events;
 use BcMath\Number;
 use App\Events\Deposit;
+use App\Events\Refund;
 
 class Account extends AbstractESAgreggate
 {
@@ -35,6 +36,8 @@ class Account extends AbstractESAgreggate
 
     public function applyEach(Events $events): void
     {
+        $this->balance = 0;
+
         if (count($events->getIterator()) === 0) {
             return;
         }
@@ -75,6 +78,20 @@ class Account extends AbstractESAgreggate
         return $this;
     }
 
+    public function applyRefundEvent(string $payload): self
+    {
+        $payload = json_decode($payload, true);
+
+        $balance = new Number($this->balance);
+        $balanceToAdd = new Number($payload['balance']);
+
+        $sum = $balance->add($balanceToAdd);
+
+        $this->balance = (int) $sum->value;
+
+        return $this;
+    }
+
     public function withdraw(int $balance): self
     {
         $this->recordEvent(new Withdraw(['balance' => $balance]));
@@ -89,6 +106,12 @@ class Account extends AbstractESAgreggate
             'balance' => $balance,
         ]));
 
+        return $this;
+    }
+
+    public function refund(int $balance): self
+    {
+        $this->recordEvent(new Refund(['balance' => $balance]));
         return $this;
     }
 }
