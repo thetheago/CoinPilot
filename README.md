@@ -19,6 +19,11 @@
 - Abra o terminal no diretório do docker-compose.yml
 - Rode ```docker compose up```
 
+## 🗺️ Planejamento
+[https://miro.com/app/board/uXjVIG4qQQ8=/](https://miro.com/app/board/uXjVIG4qQQ8=/?share_link_id=416542207277)
+![2025-04-10_11-02](https://github.com/user-attachments/assets/9aaaba94-cb58-4307-a195-576e22e22b51)
+
+
 ### 📄 Referências
 #### [Miro | Planejamento]
 https://medium.com/@shek.up/domain-driven-design-for-banking-application-d6279ecdaf2  
