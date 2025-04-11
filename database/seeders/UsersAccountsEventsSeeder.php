@@ -83,4 +83,4 @@ class UsersAccountsEventsSeeder extends Seeder
         ]);
 
     }
-} 
+}

@@ -25,15 +25,14 @@ services:
         depends_on:
             - redis
         command: >
-            sh -c "cp .env.example .env &&
-                   touch database/database.sqlite &&
-                   composer install &&
-                   composer dump-autoload &&
-                   php artisan migrate &&
-                   php artisan db:seed &&
-                   php artisan serve --host=0.0.0.0 --port=8000"
+            sh -c "/var/www/html/docker/entrypoint.sh && php artisan serve --host=0.0.0.0 --port=8000"
         networks:
             - coinnetwork
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+            interval: 10s
+            timeout: 5s
+            retries: 3
 
     worker1:
         build:
@@ -43,8 +42,10 @@ services:
         volumes:
             - ./:/var/www/html
         depends_on:
-            - redis
-            - coinpilot
+            redis:
+                condition: service_started
+            coinpilot:
+                condition: service_healthy
         command: php artisan queue:work redis --queue=transfer --timeout=0
         networks:
             - coinnetwork
@@ -57,11 +58,18 @@ services:
         volumes:
             - ./:/var/www/html
         depends_on:
-            - redis
-            - coinpilot
+            redis:
+                condition: service_started
+            coinpilot:
+                condition: service_healthy
         command: php artisan queue:work redis --queue=transfer --timeout=0
         networks:
             - coinnetwork
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 3
 
 networks:
   coinnetwork:

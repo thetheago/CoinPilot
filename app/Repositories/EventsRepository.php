@@ -52,17 +52,19 @@ class EventsRepository implements IEventsRepository
             $eventsToReplicateInAgregate = new Events();
 
             foreach ($pendingEvents as $event) {
+                $version = $version + 1;
+
                 Event::create([
                     'account_id' => $agregate->id,
                     'type' => class_basename($event),
                     'payload' => json_encode($event->payload),
-                    'version' => ++$version,
+                    'version' => $version,
                 ]);
 
                 $eventsToReplicateInAgregate->addEvent(new Event([
                     'type' => class_basename($event),
                     'payload' => json_encode($event->payload),
-                    'version' => ++$version,
+                    'version' => $version,
                     'account_id' => $agregate->id
                 ]));
             }
